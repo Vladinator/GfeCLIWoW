@@ -19,6 +19,8 @@ namespace gfecliwow
         private static readonly Regex lineRegex = new(@"^(\d+)/(\d+)\s(\d+):(\d+):(\d+)\.(\d+)\s\s(.+)$");
         private static long lastProcessedPosition = 0;
 
+        public bool SkipEvents;
+
         private static string[]? ParseEventData(string eventData)
         {
             if (LogTokenizer.TryParse(eventData, out var result))
@@ -63,7 +65,10 @@ namespace gfecliwow
             }
             if (TryParseDateTime(match, out DateTime timestamp))
             {
-                LogChanged?.Invoke(null, new LogReaderEventArgs(timestamp, data));
+                if (!SkipEvents)
+                {
+                    LogChanged?.Invoke(null, new LogReaderEventArgs(timestamp, data));
+                }
                 return true;
             }
             return false;
