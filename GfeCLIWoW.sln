@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33723.286
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{76D03A44-B7D6-4904-805A-9F13FCA27B39}") = "GfeCLIWoW", "GfeCLIWoW.csproj", "{2F1BC3E9-4EBB-46E3-9FFA-3B5BDFF8BD6B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2F1BC3E9-4EBB-46E3-9FFA-3B5BDFF8BD6B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2F1BC3E9-4EBB-46E3-9FFA-3B5BDFF8BD6B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2F1BC3E9-4EBB-46E3-9FFA-3B5BDFF8BD6B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2F1BC3E9-4EBB-46E3-9FFA-3B5BDFF8BD6B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {1699DFC5-13FF-4ED1-B0E2-74C0BB431B2F}
+	EndGlobalSection
+EndGlobal
