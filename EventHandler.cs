@@ -2,10 +2,12 @@
 {
     public class EventHandlerArgs : EventArgs
     {
+        public DateTime Timestamp { get; }
         public string Name { get; }
         public IDictionary<string, object?> Data { get; }
-        public EventHandlerArgs(string name, IDictionary<string, object?> data)
+        public EventHandlerArgs(DateTime timestamp, string name, IDictionary<string, object?> data)
         {
+            Timestamp = timestamp;
             Name = name;
             Data = data;
         }
@@ -15,14 +17,14 @@
     {
         public static event EventHandler<EventHandlerArgs>? OnEvent;
 
-        private static void InvokeEvent(string name, dynamic? data)
+        private static void InvokeEvent(DateTime timestamp, string name, dynamic? data)
         {
-            OnEvent?.Invoke(null, new EventHandlerArgs(name, data));
+            OnEvent?.Invoke(null, new EventHandlerArgs(timestamp, name, data));
         }
 
-        private static readonly Dictionary<string, Action<string[], string[]>> eventHandlers = new();
+        private static readonly Dictionary<string, Action<string[], string[], DateTime>> eventHandlers = new();
 
-        public static void RegisterHandler(string eventName, Action<string[], string[]> handler)
+        public static void RegisterHandler(string eventName, Action<string[], string[], DateTime> handler)
         {
             eventHandlers[eventName] = handler;
         }
@@ -32,7 +34,7 @@
             string eventName = e.Data[0];
             if (eventHandlers.TryGetValue(eventName, out var handler))
             {
-                handler(e.Data[1..], e.Data);
+                handler(e.Data[1..], e.Data, e.Timestamp);
             }
         }
 
@@ -48,7 +50,7 @@
             //    { "instanceID", typeof(int) }
             //};
 
-            //RegisterHandler("ENCOUNTER_START", (data, payload) => { InvokeEvent(payload[0], EventDataHandler.Unpack(data, ENCOUNTER_START)); });
+            //RegisterHandler("ENCOUNTER_START", (data, payload, timestamp) => { InvokeEvent(timestamp, payload[0], EventDataHandler.Unpack(data, ENCOUNTER_START)); });
 
             var ENCOUNTER_END = new Dictionary<string, Type>
             {
@@ -60,7 +62,7 @@
                 { "fightTime", typeof(double) }
             };
 
-            RegisterHandler("ENCOUNTER_END", (data, payload) => { InvokeEvent(payload[0], EventDataHandler.Unpack(data, ENCOUNTER_END)); });
+            RegisterHandler("ENCOUNTER_END", (data, payload, timestamp) => { InvokeEvent(timestamp, payload[0], EventDataHandler.Unpack(data, ENCOUNTER_END)); });
 
         }
     }

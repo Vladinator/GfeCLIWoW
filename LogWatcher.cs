@@ -20,7 +20,7 @@
 
         private void OnLogChanged(object sender, FileSystemEventArgs e)
         {
-            if (e.ChangeType == WatcherChangeTypes.Changed)
+            if (e.ChangeType == WatcherChangeTypes.Changed || e.ChangeType == WatcherChangeTypes.Created)
             {
                 LogChanged?.Invoke(this, new LogWatcherEventArgs(e.FullPath));
             }
@@ -59,7 +59,6 @@
 
         public void Update()
         {
-            var watcher = GetWatcher();
             OnLogChanged(this, new FileSystemEventArgs(WatcherChangeTypes.Changed, fileDirPath, fileName));
         }
     }

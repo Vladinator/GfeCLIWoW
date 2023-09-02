@@ -76,6 +76,11 @@ namespace gfecliwow
 
         public void ProcessChanges()
         {
+            if (!File.Exists(FilePath))
+            {
+                return;
+            }
+
             using var stream = new FileStream(FilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
             using var reader = new StreamReader(stream);
 
