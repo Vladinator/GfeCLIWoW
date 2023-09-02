@@ -1,6 +1,6 @@
 ﻿using Microsoft.VisualBasic.FileIO;
 
-namespace gfecliwow
+namespace GfeCLIWoW
 {
     class LogTokenizer
     {

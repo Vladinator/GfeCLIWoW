@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace gfecliwow
+namespace GfeCLIWoW
 {
     class LogReaderEventArgs : EventArgs
     {

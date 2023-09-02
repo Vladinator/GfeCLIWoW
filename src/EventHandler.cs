@@ -1,4 +1,4 @@
-﻿namespace gfecliwow
+﻿namespace GfeCLIWoW
 {
     public class EventHandlerArgs : EventArgs
     {
@@ -40,17 +40,6 @@
 
         static EventHandler()
         {
-
-            //var ENCOUNTER_START = new Dictionary<string, Type>
-            //{
-            //    { "encounterID", typeof(int) },
-            //    { "encounterName", typeof(string) },
-            //    { "difficultyID", typeof(int) },
-            //    { "groupSize", typeof(int) },
-            //    { "instanceID", typeof(int) }
-            //};
-
-            //RegisterHandler("ENCOUNTER_START", (data, payload, timestamp) => { InvokeEvent(timestamp, payload[0], EventDataHandler.Unpack(data, ENCOUNTER_START)); });
 
             var ENCOUNTER_END = new Dictionary<string, Type>
             {

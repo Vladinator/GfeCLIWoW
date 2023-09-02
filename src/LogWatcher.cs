@@ -1,4 +1,4 @@
-﻿namespace gfecliwow
+﻿namespace GfeCLIWoW
 {
     class LogWatcherEventArgs : EventArgs
     {
