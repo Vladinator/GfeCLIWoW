@@ -2,6 +2,7 @@
 {
     class Env
     {
+        public string LogFile { get; } = string.Empty;
         public string GfeCLI { get; } = string.Empty;
         public string Process { get; } = string.Empty;
         public double MinDuration { get; } = -1;
@@ -29,6 +30,12 @@
                 var v = line[(offset + 1)..].Trim();
                 switch (k)
                 {
+                    case "LOGFILE":
+                        if (v.Length > 0)
+                        {
+                            LogFile = v;
+                        }
+                        break;
                     case "GFECLI":
                         if (v.Length > 0)
                         {
@@ -58,7 +65,7 @@
         }
         public bool IsValid()
         {
-            return GfeCLI.Length > 0 && File.Exists(GfeCLI) && Process.Length > 0 && MinDuration >= 0 && DurationPadding >= 0;
+            return LogFile.Length > 0 && GfeCLI.Length > 0 && File.Exists(GfeCLI) && Process.Length > 0 && MinDuration >= 0 && DurationPadding >= 0;
         }
     }
 }

@@ -48,7 +48,7 @@ namespace GfeCLIWoW
                 return;
             }
             Console.WriteLine("Fast forwarding to the end of the current combatlog...");
-            using var program = new Program("D:\\Games\\World of Warcraft\\_retail_\\Logs\\WoWCombatLog.txt");
+            using var program = new Program(env.LogFile);
             Console.WriteLine("Monitoring for encounters. Press Ctrl+C to quit.");
             Console.CancelKeyPress += (_, e) => { e.Cancel = true; exitEvent.Set(); };
             exitEvent.Wait();
