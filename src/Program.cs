@@ -6,13 +6,12 @@ namespace GfeCLIWoW
     {
         private static readonly Env env = new();
 
-        private static string DurationToText(double duration)
+        private static string DurationToText(TimeSpan timeSpan)
         {
-            TimeSpan timeSpan = TimeSpan.FromMilliseconds(duration);
             return string.Format("{0:D2}:{1:D2}:{2:D2}", timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds);
         }
 
-        private static void RunGfeCLI(double duration, double offset)
+        private static void RunGfeCLI(TimeSpan duration, TimeSpan offset)
         {
             string timeText = DurationToText(duration);
             string offsetText = DurationToText(offset);
@@ -44,7 +43,7 @@ namespace GfeCLIWoW
             }
         }
 
-        private static readonly double MAX_HIGHLIGHT_DURATION = 1200000;
+        private static readonly TimeSpan MAX_HIGHLIGHT_DURATION = TimeSpan.FromMinutes(20);
         private static bool IsRunningAction = false;
         private static readonly object lockObject = new();
 
@@ -102,46 +101,27 @@ namespace GfeCLIWoW
             {
                 return;
             }
-            if (encounterInfo.FightTime < env.MinDuration)
+            if (encounterInfo.FightTime.TotalMilliseconds < env.MinDuration)
             {
                 return;
             }
             var action = () =>
             {
-                var delta = DateTime.Now - e.Timestamp;
-                var offset = delta.TotalMilliseconds;
-                var padding = TimeSpan.FromMilliseconds(env.DurationPadding) - delta;
-                var duration = encounterInfo.FightTime;
-                if (padding.TotalMilliseconds > 0)
+                var durationPadding = TimeSpan.FromMilliseconds(env.DurationPadding);
+                var offset = DateTime.Now - e.Timestamp - durationPadding;
+                if (offset > MAX_HIGHLIGHT_DURATION)
                 {
-                    duration += padding.TotalMilliseconds;
-                }
-                else
-                {
-                    duration -= padding.TotalMilliseconds;
-                    padding = TimeSpan.Zero;
-                }
-                var totalDuration = duration + env.DurationPadding;
-                var totalDurationAndOffset = totalDuration + offset;
-                if (totalDurationAndOffset > MAX_HIGHLIGHT_DURATION)
-                {
-                    Console.WriteLine($"Unable to save highlight that happened {DurationToText(totalDurationAndOffset)} ago because recording limit is at {DurationToText(MAX_HIGHLIGHT_DURATION)}.");
+                    Console.WriteLine($"Unable to save highlight that happened {DurationToText(offset)} ago because recording limit is at {DurationToText(MAX_HIGHLIGHT_DURATION)}.");
                     return;
                 }
-                if (totalDuration > MAX_HIGHLIGHT_DURATION)
+                var duration = encounterInfo.FightTime + durationPadding * 2;
+                if (duration > MAX_HIGHLIGHT_DURATION)
                 {
-                    Console.WriteLine($"Unable to save highlight of {DurationToText(totalDuration)} length because recording limit is at {DurationToText(MAX_HIGHLIGHT_DURATION)}.");
+                    Console.WriteLine($"Unable to save highlight of {DurationToText(duration)} length because recording limit is at {DurationToText(MAX_HIGHLIGHT_DURATION)}.");
                     return;
                 }
-                Task.Run(() =>
-                {
-                    Console.WriteLine($"Encounter {encounterInfo.ID} \"{encounterInfo.Name}\" on {encounterInfo.Difficulty} ended at {e.Timestamp:HH:mm:ss} after {encounterInfo.FightTime / 1000:0} seconds - clipping {(encounterInfo.Success ? "victory" : "wipe")}{(padding.TotalMilliseconds > 0 ? $" in {padding.TotalSeconds}" : "")}...");
-                    if (padding.TotalMilliseconds > 0)
-                    {
-                        Thread.Sleep(padding);
-                    }
-                    RunGfeCLI(totalDuration, offset);
-                }).Wait();
+                Console.WriteLine($"Encounter {encounterInfo.ID} \"{encounterInfo.Name}\" on {encounterInfo.Difficulty} ended at {e.Timestamp:HH:mm:ss} after {encounterInfo.FightTime.TotalSeconds:0} seconds - clipping {(encounterInfo.Success ? "victory" : "wipe")}...");
+                RunGfeCLI(duration, offset);
             };
             var queuedAction = () =>
             {

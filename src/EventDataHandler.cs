@@ -109,7 +109,7 @@ namespace GfeCLIWoW
         public string Difficulty { get { return Game.GetInstanceDifficultyName(DifficultyID); } }
         public int GroupSize { get; }
         public bool Success { get; }
-        public double FightTime { get; }
+        public TimeSpan FightTime { get; }
         public EncounterInfo(IDictionary<string, object?> data)
         {
             ID = data.TryGetValue("encounterID", out var encounterID) && encounterID != null && int.TryParse(encounterID.ToString(), out var _encounterID) ? _encounterID : -1;
@@ -117,11 +117,11 @@ namespace GfeCLIWoW
             DifficultyID = data.TryGetValue("difficultyID", out var difficultyID) && difficultyID != null && int.TryParse(difficultyID.ToString(), out var _difficultyID) ? _difficultyID : -1;
             GroupSize = data.TryGetValue("groupSize", out var groupSize) && groupSize != null && int.TryParse(groupSize.ToString(), out var _groupSize) ? _groupSize : -1;
             Success = data.TryGetValue("success", out var success) && success != null && int.TryParse(success.ToString(), out var _success) && _success > 0;
-            FightTime = data.TryGetValue("fightTime", out var fightTime) && fightTime != null && double.TryParse(fightTime.ToString(), out var _fightTime) ? _fightTime : -1;
+            FightTime = data.TryGetValue("fightTime", out var fightTime) && fightTime != null && double.TryParse(fightTime.ToString(), out var _fightTime) ? TimeSpan.FromMilliseconds(_fightTime) : TimeSpan.Zero;
         }
         public bool IsEmpty()
         {
-            return ID == -1 || Name == string.Empty || DifficultyID == -1 || GroupSize == -1 || FightTime == -1;
+            return ID == -1 || Name == string.Empty || DifficultyID == -1 || GroupSize == -1 || FightTime == TimeSpan.Zero;
         }
     }
 }
