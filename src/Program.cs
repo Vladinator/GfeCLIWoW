@@ -35,8 +35,7 @@ namespace GfeCLIWoW
                 string output = process.StandardOutput.ReadToEnd();
                 process.WaitForExit();
                 string clean = output.Trim();
-                string last = clean.Split("\n").Last();
-                Console.WriteLine($"[{process.ExitCode}] {last ?? clean}");
+                Console.WriteLine($"[{process.ExitCode}] {clean}");
             }
             catch
             {
