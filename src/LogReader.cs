@@ -84,6 +84,11 @@ namespace GfeCLIWoW
             using var stream = new FileStream(FilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
             using var reader = new StreamReader(stream);
 
+            if (lastProcessedPosition > stream.Length)
+            {
+                lastProcessedPosition = 0;
+            }
+
             reader.BaseStream.Seek(lastProcessedPosition, SeekOrigin.Begin);
             long lastValidPosition = lastProcessedPosition;
 
