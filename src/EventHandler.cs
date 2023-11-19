@@ -19,6 +19,9 @@
 
         private static void InvokeEvent(DateTime timestamp, string name, dynamic? data)
         {
+#if DEBUG
+            Console.WriteLine($"[EventHandler.InvokeEvent] {timestamp} {name}");
+#endif
             OnEvent?.Invoke(null, new EventHandlerArgs(timestamp, name, data));
         }
 

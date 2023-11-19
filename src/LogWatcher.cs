@@ -22,6 +22,9 @@
         {
             if (e.ChangeType == WatcherChangeTypes.Changed || e.ChangeType == WatcherChangeTypes.Created)
             {
+#if DEBUG
+                Console.WriteLine($"[LogWatcher.OnLogChanged] {e.FullPath}");
+#endif
                 LogChanged?.Invoke(this, new LogWatcherEventArgs(e.FullPath));
             }
         }

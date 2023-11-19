@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace GfeCLIWoW
 {
@@ -67,6 +68,9 @@ namespace GfeCLIWoW
             {
                 if (!SkipEvents)
                 {
+#if DEBUG
+                    Console.WriteLine($"[LogReader.ProcessNewLine] {timestamp} {string.Join(" ", data.Take(2))}{(data.Length > 2 ? $" ... ({data.Length})" : "")}");
+#endif
                     LogChanged?.Invoke(null, new LogReaderEventArgs(timestamp, data));
                 }
                 return true;
@@ -78,6 +82,9 @@ namespace GfeCLIWoW
         {
             if (!File.Exists(FilePath))
             {
+#if DEBUG
+                Console.WriteLine($"[LogReader.ProcessChanges] Log file doesn't exist. Skipping.");
+#endif
                 return;
             }
 
@@ -86,6 +93,9 @@ namespace GfeCLIWoW
 
             if (lastProcessedPosition > stream.Length)
             {
+#if DEBUG
+                Console.WriteLine($"[LogReader.ProcessChanges] Log file shrunk in size. Resetting position.");
+#endif
                 lastProcessedPosition = 0;
             }
 
@@ -98,14 +108,22 @@ namespace GfeCLIWoW
                 var match = lineRegex.Match(line);
                 if (!match.Success)
                 {
-                    break;
+#if DEBUG
+                    Console.WriteLine($"[LogReader.ProcessChanges] Log file contains invalid line: {line}");
+#endif
                 }
-                if (!ProcessNewLine(match))
+                else if (!ProcessNewLine(match))
                 {
-                    break;
+#if DEBUG
+                    Console.WriteLine($"[LogReader.ProcessChanges] Log file could not process line: {line}");
+#endif
                 }
                 lastValidPosition = reader.BaseStream.Position;
             }
+
+#if DEBUG
+            Console.WriteLine($"[LogReader.ProcessChanges] Log file processed. Position is {lastProcessedPosition}.");
+#endif
 
             lastProcessedPosition = lastValidPosition;
         }
