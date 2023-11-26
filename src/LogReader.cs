@@ -20,8 +20,6 @@ namespace GfeCLIWoW
         private static readonly Regex lineRegex = new(@"^(\d+)/(\d+)\s(\d+):(\d+):(\d+)\.(\d+)\s\s(.+)$");
         private static long lastProcessedPosition = 0;
 
-        public bool SkipEvents;
-
         private static string[]? ParseEventData(string eventData)
         {
             if (LogTokenizer.TryParse(eventData, out var result))
@@ -47,6 +45,15 @@ namespace GfeCLIWoW
             return false;
         }
 
+        public bool SkipReading;
+        public bool SkipEvents;
+
+        public void Skip(bool skip)
+        {
+            SkipReading = skip;
+            SkipEvents = skip;
+        }
+
         public event EventHandler<LogReaderEventArgs>? LogChanged;
 
         public string FilePath { get; }
@@ -69,7 +76,7 @@ namespace GfeCLIWoW
                 if (!SkipEvents)
                 {
 #if DEBUG
-                    Console.WriteLine($"[LogReader.ProcessNewLine] {timestamp} {string.Join(" ", data.Take(2))}{(data.Length > 2 ? $" ... ({data.Length})" : "")}");
+                    // Console.WriteLine($"[LogReader.ProcessNewLine] {timestamp} {string.Join(" ", data.Take(1))}{(data.Length > 1 ? $" ... ({data.Length})" : "")}");
 #endif
                     LogChanged?.Invoke(null, new LogReaderEventArgs(timestamp, data));
                 }
@@ -105,24 +112,40 @@ namespace GfeCLIWoW
             string? line;
             while ((line = reader.ReadLine()) != null)
             {
-                var match = lineRegex.Match(line);
-                if (!match.Success)
+                if (!SkipReading)
                 {
+                    if (line[..18] == "COMBAT_LOG_VERSION")
+                    {
+                        string[]? data = ParseEventData(line);
+                        if (data == null)
+                        {
 #if DEBUG
-                    Console.WriteLine($"[LogReader.ProcessChanges] Log file contains invalid line: {line}");
+                            Console.WriteLine($"[LogReader.ProcessChanges] Log file contains unsupported combat log version: {line}");
 #endif
-                }
-                else if (!ProcessNewLine(match))
-                {
+                        }
+                    }
+                    else
+                    {
+                        var match = lineRegex.Match(line);
+                        if (!match.Success)
+                        {
 #if DEBUG
-                    Console.WriteLine($"[LogReader.ProcessChanges] Log file could not process line: {line}");
+                            Console.WriteLine($"[LogReader.ProcessChanges] Log file contains invalid line: {line}");
 #endif
+                        }
+                        else if (!ProcessNewLine(match))
+                        {
+#if DEBUG
+                            Console.WriteLine($"[LogReader.ProcessChanges] Log file could not process line: {line}");
+#endif
+                        }
+                    }
                 }
                 lastValidPosition = reader.BaseStream.Position;
             }
 
 #if DEBUG
-            Console.WriteLine($"[LogReader.ProcessChanges] Log file processed. Position is {lastProcessedPosition}.");
+            Console.WriteLine($"[LogReader.ProcessChanges] Log file processed. Position is {lastValidPosition}.");
 #endif
 
             lastProcessedPosition = lastValidPosition;

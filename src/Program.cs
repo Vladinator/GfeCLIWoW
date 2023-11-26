@@ -71,9 +71,9 @@ namespace GfeCLIWoW
             reader = new LogReader(filePath);
             reader.LogChanged += ReaderLogChanged;
 #if !DEBUG
-            reader.SkipEvents = true;
+            reader.Skip(true);
             reader.ProcessChanges();
-            reader.SkipEvents = false;
+            reader.Skip(false);
 #endif
             watcher = new LogWatcher(filePath);
             watcher.LogChanged += WatcherLogChanged;
