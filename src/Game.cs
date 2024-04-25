@@ -47,7 +47,8 @@
             { 170, "Path of Ascension: Wisdom" },
             { 171, "Path of Ascension: Humility" },
             { 172, "World Boss" },
-            { 192, "Challenge Level 1" }
+            { 192, "Challenge Level 1" },
+            { 205, "Follower" },
         };
 
         public static string GetInstanceDifficultyName(int id)
