@@ -17,7 +17,7 @@ namespace GfeCLIWoW
 
     class LogReader
     {
-        private static readonly Regex lineRegex = new(@"^(\d+)/(\d+)\s(\d+):(\d+):(\d+)\.(\d+)\s\s(.+)$");
+        private static readonly Regex lineRegex = new(@"^(\d+)/(\d+)/(\d+)\s(\d+):(\d+):(\d+)\.(\d+)\s\s(.+)$");
         private static long lastProcessedPosition = 0;
 
         private static string[]? ParseEventData(string eventData)
@@ -33,12 +33,13 @@ namespace GfeCLIWoW
         {
             if (int.TryParse(match.Groups[1].Value, out int month) &&
                 int.TryParse(match.Groups[2].Value, out int day) &&
-                int.TryParse(match.Groups[3].Value, out int hours) &&
-                int.TryParse(match.Groups[4].Value, out int minutes) &&
-                int.TryParse(match.Groups[5].Value, out int seconds) &&
-                int.TryParse(match.Groups[6].Value, out int milliseconds))
+                int.TryParse(match.Groups[3].Value, out int year) &&
+                int.TryParse(match.Groups[4].Value, out int hours) &&
+                int.TryParse(match.Groups[5].Value, out int minutes) &&
+                int.TryParse(match.Groups[6].Value, out int seconds) &&
+                int.TryParse(match.Groups[7].Value, out int milliseconds))
             {
-                timestamp = new DateTime(DateTime.Now.Year, month, day, hours, minutes, seconds, milliseconds, DateTimeKind.Local);
+                timestamp = new DateTime(year, month, day, hours, minutes, seconds, milliseconds/10, DateTimeKind.Local);
                 return true;
             }
             timestamp = default;
