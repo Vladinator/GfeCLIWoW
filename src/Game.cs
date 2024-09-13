@@ -37,7 +37,7 @@
             { 45, "PvP" },
             { 147, "Normal" },
             { 149, "Heroic" },
-            { 150, "Normal" },
+            { 150, "Normal Scaling (1-5)" },
             { 151, "Looking For Raid" },
             { 152, "Visions of N'Zoth" },
             { 153, "Teeming Island" },
@@ -49,6 +49,9 @@
             { 172, "World Boss" },
             { 192, "Challenge Level 1" },
             { 205, "Follower" },
+            { 208, "Delves" },
+            { 216, "Quest" },
+            { 220, "Story" },
         };
 
         public static string GetInstanceDifficultyName(int id)
