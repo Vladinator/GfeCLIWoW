@@ -98,12 +98,22 @@ namespace GfeCLIWoW
             var encounterInfo = new EncounterInfo(e.Data);
             if (encounterInfo.IsEmpty())
             {
+#if DEBUG
+                Console.WriteLine($"[Debug] Encounter info is empty after parsing: {e.Data}");
+#endif
                 return;
             }
             if (encounterInfo.FightTime.TotalMilliseconds < env.MinDuration)
             {
+#if DEBUG
+                Console.WriteLine($"[Debug] Encounter skipped because fight was too short: {encounterInfo.FightTime.TotalMilliseconds:0} < {env.MinDuration:0}");
+#endif
                 return;
             }
+            var encounterText = $"Encounter {encounterInfo.ID} \"{encounterInfo.Name}\" on {encounterInfo.Difficulty} ended at {e.Timestamp:HH:mm:ss} after {encounterInfo.FightTime.TotalSeconds:0} seconds";
+#if DEBUG
+            Console.WriteLine($"[Debug] {encounterText} - {(encounterInfo.Success ? "victory" : "wipe")}");
+#endif
             var action = () =>
             {
                 var durationPadding = TimeSpan.FromMilliseconds(env.DurationPadding);
@@ -119,7 +129,7 @@ namespace GfeCLIWoW
                     Console.WriteLine($"Unable to save highlight of {DurationToText(duration)} length because recording limit is at {DurationToText(MAX_HIGHLIGHT_DURATION)}.");
                     return;
                 }
-                Console.WriteLine($"Encounter {encounterInfo.ID} \"{encounterInfo.Name}\" on {encounterInfo.Difficulty} ended at {e.Timestamp:HH:mm:ss} after {encounterInfo.FightTime.TotalSeconds:0} seconds - clipping {(encounterInfo.Success ? "victory" : "wipe")}...");
+                Console.WriteLine($"{encounterText} - clipping {(encounterInfo.Success ? "victory" : "wipe")}...");
                 RunGfeCLI(duration, offset);
             };
             var queuedAction = () =>

@@ -66,7 +66,7 @@ namespace GfeCLIWoW
 
         private bool ProcessNewLine(Match match)
         {
-            string eventData = match.Groups[7].Value;
+            string eventData = match.Groups[^1].Value;
             string[]? data = ParseEventData(eventData);
             if (data == null)
             {
