@@ -7,6 +7,8 @@
         public string Process { get; } = string.Empty;
         public double MinDuration { get; } = -1;
         public double DurationPadding { get; } = -1;
+        public bool StartInTray { get; } = false;
+        public bool ShowTray { get; } = false;
         public Env()
         {
             var envFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ".env");
@@ -58,6 +60,18 @@
                         if (double.TryParse(v, out var durationPadding) && durationPadding >= 0)
                         {
                             DurationPadding = durationPadding;
+                        }
+                        break;
+                    case "SHOW_TRAY":
+                        if (bool.TryParse(v, out var showTray))
+                        {
+                            ShowTray = showTray;
+                        }
+                        break;
+                    case "START_TO_TRAY":
+                        if (bool.TryParse(v, out var startInTray))
+                        {
+                            StartInTray = startInTray;
                         }
                         break;
                 }

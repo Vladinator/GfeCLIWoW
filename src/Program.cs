@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Runtime.InteropServices;
 
 namespace GfeCLIWoW
 {
@@ -55,11 +56,24 @@ namespace GfeCLIWoW
                 Console.WriteLine("You need to create a .env file and it needs to contain the required fields.");
                 return;
             }
+#if WINDOWS
+            if (env.ShowTray || env.StartInTray)
+            {
+                Tray.Start();
+                if (env.StartInTray)
+                {
+                    Tray.HideTo();
+                }
+            }
+#endif
             Console.WriteLine("Fast forwarding to the end of the current combatlog...");
             using var program = new Program(env.LogFile);
             Console.WriteLine("Monitoring for encounters. Press Ctrl+C to quit.");
             Console.CancelKeyPress += (_, e) => { e.Cancel = true; exitEvent.Set(); };
             exitEvent.Wait();
+#if WINDOWS
+            Tray.Stop();
+#endif
         }
 
         private readonly LogReader reader;
