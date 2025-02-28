@@ -52,6 +52,7 @@
             { 208, "Delves" },
             { 216, "Quest" },
             { 220, "Story" },
+            { 230, "Heroic" },
         };
 
         public static string GetInstanceDifficultyName(int id)

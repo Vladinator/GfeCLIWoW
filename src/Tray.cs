@@ -47,8 +47,10 @@ namespace GfeCLIWoW
         [DllImport("user32.dll")]
         private static extern bool ShowWindow(IntPtr handle, int command);
         [DllImport("user32.dll")]
+        private static extern bool SetForegroundWindow(IntPtr handle);
+        [DllImport("user32.dll")]
         private static extern IntPtr GetWindowLong(IntPtr handle, int index);
-        [DllImport("user32.dll", SetLastError = true)]
+        [DllImport("user32.dll")]
         private static extern IntPtr SetWindowLong(IntPtr handle, int index, IntPtr newLong);
         public static bool? IsShown(nint handle)
         {
@@ -79,6 +81,11 @@ namespace GfeCLIWoW
             var currentStyle = GetWindowLong(handle, GWL_EXSTYLE);
             var newStyle = shown ? (currentStyle | WS_EX_TOOLWINDOW) : (currentStyle & ~WS_EX_TOOLWINDOW);
             changed = SetWindowLong(handle, GWL_EXSTYLE, newStyle) == newStyle;
+            if (!changed)
+            {
+                return false;
+            }
+            changed = SetForegroundWindow(handle);
             return changed;
         }
     }
@@ -110,7 +117,7 @@ namespace GfeCLIWoW
             {
                 while (!trayInstanceWorkerCancellation.IsCancellationRequested && trayInstance == null)
                 {
-                    Thread.Sleep(250);
+                    Thread.Sleep(25);
                 }
             }).Wait();
         }
