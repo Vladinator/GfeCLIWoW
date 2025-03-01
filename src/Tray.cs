@@ -38,16 +38,43 @@ namespace GfeCLIWoW
 
     class WindowUtils
     {
+        private static WINDOWPLACEMENT origPlacement = WINDOWPLACEMENT.Create();
+        private static nint origExStyle;
         private const int SW_HIDE = 0;
         private const int SW_SHOW = 5;
+        private const int SW_SHOWNORMAL = 1;
+        private const int SW_SHOWMINIMIZED = 2;
+        private const int SW_SHOWMAXIMIZED = 3;
         private const int GWL_EXSTYLE = -20;
         private const int WS_EX_TOOLWINDOW = 0x00000080;
+        [StructLayout(LayoutKind.Sequential)]
+        private struct WINDOWPLACEMENT
+        {
+            public int length;
+            public int flags;
+            public int showCmd;
+            public System.Drawing.Point ptMinPosition;
+            public System.Drawing.Point ptMaxPosition;
+            public System.Drawing.Rectangle rcNormalPosition;
+            public static WINDOWPLACEMENT Create()
+            {
+                var instance = new WINDOWPLACEMENT
+                {
+                    length = Marshal.SizeOf(typeof(WINDOWPLACEMENT))
+                };
+                return instance;
+            }
+        }
         [DllImport("user32.dll")]
         private static extern bool IsWindowVisible(IntPtr handle);
         [DllImport("user32.dll")]
         private static extern bool ShowWindow(IntPtr handle, int command);
         [DllImport("user32.dll")]
         private static extern bool SetForegroundWindow(IntPtr handle);
+        [DllImport("user32.dll")]
+        private static extern bool GetWindowPlacement(IntPtr handle, ref WINDOWPLACEMENT placement);
+        [DllImport("user32.dll")]
+        private static extern bool SetWindowPlacement(IntPtr handle, ref WINDOWPLACEMENT placement);
         [DllImport("user32.dll")]
         private static extern IntPtr GetWindowLong(IntPtr handle, int index);
         [DllImport("user32.dll")]
@@ -70,23 +97,32 @@ namespace GfeCLIWoW
             {
                 return null;
             }
-            var changed = ShowWindow(handle, shown ? SW_SHOW : SW_HIDE);
+            if (!shown)
+            {
+                if (!GetWindowPlacement(handle, ref origPlacement))
+                {
+                    return false;
+                }
+                origExStyle = GetWindowLong(handle, GWL_EXSTYLE);
+                SetWindowLong(handle, GWL_EXSTYLE, origExStyle & ~WS_EX_TOOLWINDOW);
+                ShowWindow(handle, SW_HIDE);
 #if DEBUG
-            Console.WriteLine($"[Debug] Window handle {handle:X} set as {(shown ? "shown" : "hidden")}");
+            Console.WriteLine($"[Debug] Window handle {handle:X} set as hidden");
 #endif
-            if (!changed)
-            {
-                return false;
+                return true;
             }
-            var currentStyle = GetWindowLong(handle, GWL_EXSTYLE);
-            var newStyle = shown ? (currentStyle | WS_EX_TOOLWINDOW) : (currentStyle & ~WS_EX_TOOLWINDOW);
-            changed = SetWindowLong(handle, GWL_EXSTYLE, newStyle) == newStyle;
-            if (!changed)
+            if (origPlacement.showCmd == SW_SHOWMINIMIZED)
             {
-                return false;
+                origPlacement.showCmd = SW_SHOWNORMAL;
             }
-            changed = SetForegroundWindow(handle);
-            return changed;
+            ShowWindow(handle, SW_SHOW);
+            SetWindowLong(handle, GWL_EXSTYLE, origExStyle);
+            SetWindowPlacement(handle, ref origPlacement);
+            SetForegroundWindow(handle);
+#if DEBUG
+            Console.WriteLine($"[Debug] Window handle {handle:X} set as shown");
+#endif
+            return true;
         }
     }
 
