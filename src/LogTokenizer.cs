@@ -4,9 +4,8 @@ namespace GfeCLIWoW
 {
     class LogTokenizer
     {
-        public static bool TryParse(string input, out List<string> tokens)
+        private static bool TryParseDefault(string input, out List<string> tokens)
         {
-            input = input.Replace("\\\"", "\"\"");
             tokens = new();
 
             using var reader = new StringReader(input);
@@ -22,10 +21,10 @@ namespace GfeCLIWoW
                 {
                     fields = parser.ReadFields();
                 }
-                catch (Exception ex)
+                catch (MalformedLineException)
                 {
 #if DEBUG
-                    Console.WriteLine($"[LogTokenizer.TryParse] {ex.Message}");
+                    // Console.WriteLine($"[LogTokenizer.TryParse] {ex.Message}");
 #endif
                     return false;
                 }
@@ -36,6 +35,20 @@ namespace GfeCLIWoW
             }
 
             return true;
+        }
+        private static bool TryParseEscape(string input, out List<string> tokens)
+        {
+            input = input.Replace("\\\"", "\"\"");
+            return TryParseDefault(input, out tokens);
+        }
+        public static bool TryParse(string input, out List<string> tokens)
+        {
+            if (TryParseDefault(input, out tokens))
+            {
+                return true;
+            }
+            tokens.Clear();
+            return TryParseEscape(input, out tokens);
         }
     }
 }

@@ -5,10 +5,11 @@
         public string LogFile { get; } = string.Empty;
         public string GfeCLI { get; } = string.Empty;
         public string Process { get; } = string.Empty;
-        public double MinDuration { get; } = -1;
-        public double DurationPadding { get; } = -1;
+        public double MinDuration { get; } = 1000;
+        public double DurationPadding { get; } = 0;
         public bool StartInTray { get; } = false;
         public bool ShowTray { get; } = false;
+        public string ClipCriteria { get; } = string.Empty;
         public Env()
         {
             var envFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ".env");
@@ -72,6 +73,12 @@
                         if (bool.TryParse(v, out var startInTray))
                         {
                             StartInTray = startInTray;
+                        }
+                        break;
+                    case "CLIP_CRITERIA":
+                        if (GfeCLIWoW.ClipCriteria.IsValid(v))
+                        {
+                            ClipCriteria = v;
                         }
                         break;
                 }

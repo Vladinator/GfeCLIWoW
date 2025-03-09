@@ -50,6 +50,9 @@ namespace GfeCLIWoW
 
         public static void Main()
         {
+            AppDomain.CurrentDomain.UnhandledException += (sender, e) => {
+                Console.WriteLine($"[UnhandledException] {DateTime.Now}: {e.ExceptionObject}");
+            };
             if (!env.IsValid())
             {
                 Console.WriteLine("You need to create a .env file and it needs to contain the required fields.");
@@ -127,6 +130,24 @@ namespace GfeCLIWoW
 #if DEBUG
             Console.WriteLine($"[Debug] {encounterText} - {(encounterInfo.Success ? "victory" : "wipe")}");
 #endif
+            if (env.ClipCriteria.Length > 0)
+            {
+                var context = new ClipCriteriaContext {
+                    Encounter = encounterInfo.ID,
+                    EncounterName = encounterInfo.Name,
+                    Difficulty = encounterInfo.DifficultyID,
+                    DifficultyName = encounterInfo.Difficulty,
+                    Size = encounterInfo.GroupSize,
+                    Duration = encounterInfo.FightTime,
+                    Success = encounterInfo.Success,
+                };
+                var canClip = ClipCriteria.CanClip(env.ClipCriteria, context);
+                if (canClip == false)
+                {
+                    Console.WriteLine($"Skipped saving highlight because it didn't fit the clipping criteria.");
+                    return;
+                }
+            }
             var action = () =>
             {
                 var durationPadding = TimeSpan.FromMilliseconds(env.DurationPadding);
