@@ -144,7 +144,7 @@ namespace GfeCLIWoW
                 var canClip = ClipCriteria.CanClip(env.ClipCriteria, context);
                 if (canClip == false)
                 {
-                    Console.WriteLine($"Skipped saving highlight because it didn't fit the clipping criteria.");
+                    Console.WriteLine($"{encounterText} - skipping {(encounterInfo.Success ? "victory" : "wipe")} because of criteria");
                     return;
                 }
             }
