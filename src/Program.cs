@@ -51,7 +51,24 @@ namespace GfeCLIWoW
         public static void Main()
         {
             AppDomain.CurrentDomain.UnhandledException += (sender, e) => {
-                Console.WriteLine($"[UnhandledException] {DateTime.Now}: {e.ExceptionObject}");
+                var timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                var message = $"[UnhandledException] {timestamp}: {e.ExceptionObject}";
+                Console.WriteLine(message);
+                if (!e.IsTerminating)
+                {
+                    return;
+                }
+                try
+                {
+                    string exePath = System.Reflection.Assembly.GetExecutingAssembly().Location;
+                    string logPath = Path.ChangeExtension(exePath, ".log");
+                    File.AppendAllText(logPath, message + Environment.NewLine);
+                }
+                catch
+                {
+                    Console.WriteLine("Press any key to exit . . .");
+                    Console.ReadKey(true);
+                }
             };
             if (!env.IsValid())
             {
