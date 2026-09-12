@@ -53,6 +53,17 @@
             { 216, "Quest" },
             { 220, "Story" },
             { 230, "Heroic" },
+            { 232, "Event" },
+            { 233, "Mythic - Flexible Raiding" },
+            { 236, "Lorewalking" },
+            { 241, "Lorewalking" },
+            { 245, "Decor Duel" },
+            { 247, "Decor Duel" },
+            { 248, "RENAME Event" },
+            { 251, "Decor Duel" },
+            { 253, "Decor Duel" },
+            { 254, "Naigtal" },
+            { 257, "Timewalking" },
         };
 
         public static string GetInstanceDifficultyName(int id)
